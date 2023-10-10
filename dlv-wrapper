@@ -1,0 +1,19 @@
+#!/bin/bash
+
+declare -A DLV_PORT_MAP=(
+  [kube-apiserver]=2341
+  [kube-controller-manager]=2342
+  [kube-scheduler]=2343
+  [kube-proxy]=2344
+  [kubelet]=2345
+  [kubectl]=2346
+)
+
+if [ $0 == "dlv-wrapper" ]; then
+    echo "Please run this script from for the symbolic link"
+    exit 1
+fi
+
+program_name=$(basename $0)
+dlv --listen=:${DLV_PORT_MAP[$program_name]} --headless=true --api-version=2 --accept-multiclient \
+    exec ${HOME}/kubernetes-binaries/$program_name "$@"

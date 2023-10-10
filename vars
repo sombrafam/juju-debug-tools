@@ -1,0 +1,3 @@
+export LAUNCHPAD_ID=sombrafam
+export KUBERNETES_FOLDER="/home/erlon/internal_git/kubernetes/kubernetes"
+export BASTION_IP="10.230.65.165"

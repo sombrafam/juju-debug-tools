@@ -1,0 +1,13 @@
+#!/bin/bash
+
+get_control_nodes () {
+    juju status --format=short | grep kubernetes-control-plane | awk '{print $3}'
+}
+
+get_worker_nodes() {
+    juju status --format=short | grep kubernetes-worker | awk '{print $3}'
+}
+
+get_nodes() {
+    juju status --format=short | grep -E "kubernetes-control-plane|kubernetes-worker" | awk '{print $3}'
+}
