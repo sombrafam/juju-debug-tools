@@ -10,10 +10,13 @@ declare -A DLV_PORT_MAP=(
 )
 
 if [ $0 == "dlv-wrapper" ]; then
-    echo "Please run this script from for the symbolic link"
-    exit 1
+     process_name=$1
+     pid=$(pidof $process_name)
+     ${HOME}/kubernetes-binaries/dlv --listen=:${DLV_PORT_MAP[$program_name]} --headless=true --api-version=2 \
+     --accept-multiclient attach $pid
+      exit 0
 fi
 
 program_name=$(basename $0)
-dlv --listen=:${DLV_PORT_MAP[$program_name]} --headless=true --api-version=2 --accept-multiclient \
-    exec ${HOME}/kubernetes-binaries/$program_name "$@"
+${HOME}/kubernetes-binaries/dlv --listen=:${DLV_PORT_MAP[$program_name]} --headless=true --api-version=2 --accept-multiclient \
+    exec ${HOME}/kubernetes-binaries/$program_name -- "$@"

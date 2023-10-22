@@ -1,13 +1,17 @@
-#!/bin/bash
+#!/bin/bash -ex
 
-source vars
-source helpers
+repo_folder=$(dirname "$(realpath "$0")")
+repo_name=$(basename "$repo_folder")
+
+source "$repo_folder"/vars
+source "$repo_folder"/helpers
 
 KUBE_MASTER_APPS="kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubelet kubectl"
 KUBE_MASTER_SERVICES="kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubelet"
 
 KUBE_WORKER_APPS="kube-proxy kubelet kubectl"
 KUBE_WORKER_SERVICES="kube-proxy kubelet"
+
 
 juju status --format=short > /dev/null 2>&1
 if [ $? -ne 0 ]; then
@@ -44,20 +48,39 @@ proxy-extra-args="${updated_proxy_extra_args}"
 
 for node in $(get_control_nodes); do
     # setup ssh keys
-    juju ssh "$node" "ssh-import-lp-id $LP_USER"
+    juju ssh "$node" "ssh-import-id-lp $LP_USER"
     # setup public ips on kubernetes workers/masters
     # fip=$(openstack floating ip list | grep None| cut -d"|" -f3 | head -1)
     # remount kubernetes folders
+    # juju scp  -- -r "/home/ubuntu/kubernetes-binaries" "$node":/home/ubuntu/
+    # we need to use rsync since scp does not copy symlinks
+    rsync --checksum --delete -avz /home/ubuntu/kubernetes-binaries/ ubuntu@"$node":~/kubernetes-binaries/
     for app in $KUBE_MASTER_APPS; do
         juju ssh "$node" "sudo mount --bind /home/ubuntu/kubernetes-binaries/$app /snap/$app/current/$app"
     done
 
     # restart kubernetes services
-    for service in KUBE_MASTER_SERVICES; do
+    for service in $KUBE_MASTER_SERVICES; do
         juju ssh "$node" "sudo systemctl restart snap.$service.daemon.service"
     done
 done
 
+for node in $(get_worker_nodes); do
+    # setup ssh keys
+    juju ssh "$node" "ssh-import-id-lp $LP_USER"
+    # setup public ips on kubernetes workers/masters
+    # fip=$(openstack floating ip list | grep None| cut -d"|" -f3 | head -1)
+    # remount kubernetes folders
+    # we need to use rsync since scp does not copy symlinks
+    rsync --checksum --delete -avz /home/ubuntu/kubernetes-binaries/ ubuntu@"$node":~/kubernetes-binaries/
+    # juju scp -- -r "/home/ubuntu/kubernetes-binaries" "$node":/home/ubuntu/
+    for app in $KUBE_WORKER_APPS; do
+        juju ssh "$node" "sudo mount --bind /home/ubuntu/kubernetes-binaries/$app /snap/$app/current/$app"
+    done
 
-
+    # restart kubernetes services
+    for service in $KUBE_WORKER_SERVICES; do
+        juju ssh "$node" "sudo systemctl restart snap.$service.daemon.service"
+    done
+done
 
