@@ -7,22 +7,16 @@ source "$repo_folder"/vars
 source "$repo_folder"/helpers
 
 cd "$KUBERNETES_FOLDER" || exit 1
-WHAT="cmd/kubelet cmd/kubectl cmd/kube-proxy cmd/kube-apiserver cmd/kube-controller-manager cmd/kube-scheduler"
+WHAT="cmd/kubelet cmd/kubectl cmd/kube-proxy cmd/kube-apiserver cmd/kube-controller-manager cmd/kube-scheduler cmd/kube-proxy"
 make all DBG=1 WHAT="$WHAT"
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to build kubernetes binaries, exiting.."
     exit 1
 fi
 
-find "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/" -type f -name "*.org" -exec rm {} \;
 rm -f "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/dlv-wrapper"
 
 cp "$repo_folder/dlv-wrapper" "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/"
-for i in $DEBUG_TARGETS; do
-    echo "INFO: wrapping debug to $i"
-    mv "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/$i" "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/$i.org"
-    ln -rs "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/dlv-wrapper" "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/$i";
-done
 
 # Build delve
 rm -rf "$KUBERNETES_FOLDER/delve"

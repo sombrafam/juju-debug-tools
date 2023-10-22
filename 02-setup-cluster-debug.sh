@@ -51,8 +51,6 @@ for node in $(get_control_nodes); do
     juju ssh "$node" "ssh-import-id-lp $LP_USER"
     # setup public ips on kubernetes workers/masters
     # fip=$(openstack floating ip list | grep None| cut -d"|" -f3 | head -1)
-    # remount kubernetes folders
-    # juju scp  -- -r "/home/ubuntu/kubernetes-binaries" "$node":/home/ubuntu/
     # we need to use rsync since scp does not copy symlinks
     rsync --checksum --delete -avz /home/ubuntu/kubernetes-binaries/ ubuntu@"$node":~/kubernetes-binaries/
     for app in $KUBE_MASTER_APPS; do
@@ -70,10 +68,8 @@ for node in $(get_worker_nodes); do
     juju ssh "$node" "ssh-import-id-lp $LP_USER"
     # setup public ips on kubernetes workers/masters
     # fip=$(openstack floating ip list | grep None| cut -d"|" -f3 | head -1)
-    # remount kubernetes folders
     # we need to use rsync since scp does not copy symlinks
     rsync --checksum --delete -avz /home/ubuntu/kubernetes-binaries/ ubuntu@"$node":~/kubernetes-binaries/
-    # juju scp -- -r "/home/ubuntu/kubernetes-binaries" "$node":/home/ubuntu/
     for app in $KUBE_WORKER_APPS; do
         juju ssh "$node" "sudo mount --bind /home/ubuntu/kubernetes-binaries/$app /snap/$app/current/$app"
     done
