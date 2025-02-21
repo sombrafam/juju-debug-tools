@@ -6,29 +6,30 @@ repo_name=$(basename "$repo_folder")
 source "$repo_folder"/vars
 source "$repo_folder"/helpers
 
-cd "$KUBERNETES_FOLDER" || exit 1
-WHAT="cmd/kubelet cmd/kubectl cmd/kube-proxy cmd/kube-apiserver cmd/kube-controller-manager cmd/kube-scheduler cmd/kube-proxy"
-make all DBG=1 WHAT="$WHAT"
+cd "$JUJU_SOURCE_FOLDER" || exit 1
+WHAT="jujud"
+export DEBUG_JUJU=1
+make $WHAT
 if [ $? -ne 0 ]; then
-    echo "ERROR: Failed to build kubernetes binaries, exiting.."
+    echo "ERROR: Failed to build $WHAT binaries, exiting.."
     exit 1
 fi
 
-rm -f "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/dlv-wrapper"
-
-cp "$repo_folder/dlv-wrapper" "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/"
-
 # Build delve
-rm -rf "$KUBERNETES_FOLDER/delve"
-git clone https://github.com/go-delve/delve.git  "$KUBERNETES_FOLDER/delve"
-cd "$KUBERNETES_FOLDER/delve" || exit 1
-export GOROOT=/snap/go/current/
+if [ -d "$JUJU_SOURCE_FOLDER/delve" ]; then
+    mv "$JUJU_SOURCE_FOLDER/delve" "$JUJU_SOURCE_FOLDER/delve.old"
+fi
+
+git clone https://github.com/go-delve/delve.git  "$JUJU_SOURCE_FOLDER/delve"
+cd "$JUJU_SOURCE_FOLDER/delve" || exit 1
+
 make build
-cp "$KUBERNETES_FOLDER/delve/dlv" "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/"
+cp "$JUJU_SOURCE_FOLDER/delve/dlv" "$GOPATH/bin"
 
-ssh ubuntu@${BASTION_IP} 'mkdir -p kubernetes-binaries '"$repo_name"
-rsync --checksum --delete -avz "$repo_folder/" ubuntu@"${BASTION_IP}":"$repo_name"/
-rsync --checksum --delete -avz "$KUBERNETES_FOLDER/_output/local/bin/linux/amd64/" ubuntu@${BASTION_IP}:kubernetes-binaries/
+ssh ubuntu@${BASTION_IP} 'mkdir -p juju-binaries'
+rsync --checksum --delete -avz "$GOPATH/bin/" ubuntu@"${BASTION_IP}":~/juju-binaries/
+rsync --checksum --delete -Cravz "$repo_folder/" ubuntu@"${BASTION_IP}":"$repo_name"/
 
-echo "INFO: Successfully built and synced kubernetes binaries to bastion node"
+echo "INFO: Successfully built and synced juju binaries to bastion node"
+echo "INFO: Now you can run ~/$repo_name/02-setup-cluster.sh from your bastion node"
 

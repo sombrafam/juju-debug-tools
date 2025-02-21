@@ -1,6 +1,6 @@
 #!/bin/bash
 
-get_control_nodes () {
+get_controller_instances () {
     juju status --format=short | grep kubernetes-control-plane | awk '{print $3}'
 }
 

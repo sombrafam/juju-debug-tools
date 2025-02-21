@@ -6,5 +6,9 @@ repo_name=$(basename "$repo_folder")
 source "$repo_folder"/vars
 source "$repo_folder"/helpers
 
-sudo snap install --channel=1.20/stable go --classic
-sudo apt install make       # version 4.3-4.1build1, or
+sudo snap install --channel=1.23/stable go --classic
+sudo apt install -y make
+
+echo "Go is installed!"
+echo "Set GOROOT=\"/snap/go/current/\" and GOPATH=\"\$HOME/go\" in your shell profile"
+

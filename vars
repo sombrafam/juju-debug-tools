@@ -1,4 +1,10 @@
+#!/bin/bash
+
 export LAUNCHPAD_ID=sombrafam
-export KUBERNETES_FOLDER="/home/erlon/internal_git/kubernetes/kubernetes"
-export BASTION_IP="10.230.65.165"
-export DEBUG_TARGETS="kube-apiserver"
+# Source folder for your juju code
+export JUJU_SOURCE_FOLDER="/home/erlon/internal_git/juju"
+export BASTION_IP="10.149.140.6"
+# The controller name
+export JUJU_CONTROLLER="juju36"
+# The controller machine juju machine you want to debug
+export DEBUG_TARGET_MACHINE="1"
