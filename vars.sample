@@ -1,0 +1,14 @@
+export LAUNCHPAD_ID=""
+
+# Source folder and branch/tag for your juju code
+export JUJU_SOURCE_FOLDER=""
+export JUJU_BRANCH=""
+
+# The machine where you control the juju controller
+export BASTION_IP=""
+
+# The controller name
+export JUJU_CONTROLLER=""
+
+# The controller machine juju machine you want to debug
+export DEBUG_TARGET_MACHINES="0"
