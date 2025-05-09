@@ -18,6 +18,7 @@ fi
 
 # Build delve
 if [ -d "$JUJU_SOURCE_FOLDER/delve" ]; then
+    rm -rf "$JUJU_SOURCE_FOLDER/delve.old"
     mv "$JUJU_SOURCE_FOLDER/delve" "$JUJU_SOURCE_FOLDER/delve.old"
 fi
 
@@ -32,5 +33,4 @@ rsync --checksum --delete -avz "$GOPATH/bin/" ubuntu@"${BASTION_IP}":~/juju-bina
 rsync --checksum --delete -Cravz "$repo_folder/" ubuntu@"${BASTION_IP}":"$repo_name"/
 
 echo "INFO: Successfully built and synced juju binaries to bastion node"
-echo "INFO: Now you can run ~/$repo_name/02-setup-cluster.sh from your bastion node"
-
+echo "INFO: Now you can run ~/${repo_name}/02-setup-cluster.sh from your bastion node"

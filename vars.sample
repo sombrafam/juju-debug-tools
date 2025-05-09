@@ -1,6 +1,9 @@
+# Please rename this file to vars and fill in the variables below
+
 export LAUNCHPAD_ID=""
 
-# Source folder and branch/tag for your juju code
+# Source folder and branch/tag for your juju code. Branch version
+# must be the same, major and minor as the juju version in the controller.
 export JUJU_SOURCE_FOLDER=""
 export JUJU_BRANCH=""
 
@@ -10,5 +13,5 @@ export BASTION_IP=""
 # The controller name
 export JUJU_CONTROLLER=""
 
-# The controller machine juju machine you want to debug
-export DEBUG_TARGET_MACHINES="0"
+# The controller IPs (space separated) that you want to debug
+export CONTROLLER_IPS=""
