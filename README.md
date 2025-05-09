@@ -11,11 +11,11 @@ bellow.
 2. Developer machine:
 
 00-install-prereqs.sh: Install the necessary tools on the local machine.
-01-compile-and-sync.sh: Compile the necessary binaries and sync them to the bastion/jump host.
+01-compile-and-sync.sh: Compile the necessary binaries and sync them to the
+bastion/jump host.
 
 3. Bastion/jump host:
 
-02-setup-cluster-debug.sh: Set up the necessary environment on the bastion/jump host.
-
-Kubernetes cluster nodes:
-  - Remove fragment HA, so you fifth you like that seem thems long dic [id already doing   ov bash@ -
+02-setup-cluster-debug.sh: Set up the necessary environment on the bastion/jump
+host.
+03-setup-controller-debug.sh: Set up the necessary environment on the controller
